@@ -1,0 +1,101 @@
+---
+
+- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+  group:
+    name: "{{ group }}"
+    state: present
+- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    createhome: no
+    shell: /bin/bash
+    state: present
+- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+
+
+- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - kibana
+    - kibana/config
+    - kibana/log
+    - kibana/data
+  notify: restart_kibana
+
+
+- name: Download Kibana
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/kibana"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
+- name: Extract kibana on {{ ansible_default_ipv4.address }}
+  unarchive:
+    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/kibana"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    exclude: kibana-{{ version }}-linux-x86_64/optimize/.babelcache.json
+    remote_src: yes
+  notify: restart_kibana
+
+- name: Symlink for kibana on {{ ansible_default_ipv4.address }}
+  file:
+    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64"
+    path: "{{ base_directory }}/kibana/kibana"
+    state: link
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_kibana
+  
+- name: Configure {{ item }} for Kibana on {{ ansible_default_ipv4.address }}
+  template:
+    src: templates/{{ item }}.j2
+    dest: "{{ base_directory }}/kibana/config/{{ item }}"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: 0644
+  with_items:
+    - kibana.yml
+  notify: restart_kibana
+
+- name: Add Healthcheck script for Kibana on {{ ansible_default_ipv4.address }}
+  template:
+    src: "kibana-healthcheck.sh.j2"
+    dest: "{{ base_directory }}/kibana/kibana-healthcheck.sh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0744
+  notify: restart_kibana
+
+- name: Service systemD for Kibana on {{ ansible_default_ipv4.address }}
+  template:
+    src: templates/kibana.service.j2
+    dest: /etc/systemd/system/kibana.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_kibana
+- name: Enable service kibana
+  systemd:
+    enabled: yes
+    daemon_reload: yes
+    name: kibana.service
+
+...

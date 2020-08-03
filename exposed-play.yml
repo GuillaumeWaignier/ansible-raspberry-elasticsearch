@@ -1,0 +1,19 @@
+---
+# Install Kibana and Elasticserach
+# Elasticsearch is exposed on port 9200
+# Kibana is exposed on port 5601
+
+
+- name: Install elasticsearch
+  hosts: elasticsearch
+  roles:
+  - role: elasticsearch
+    tags: elasticsearch
+
+- name: Install kibana
+  hosts: kibana
+  roles:
+  - role: kibana
+    tags: kibana
+
+...

@@ -1,0 +1,16 @@
+[Unit]
+Description=Elasticsearch for the ELK stack
+After=network.target
+
+[Service]
+EnvironmentFile=-{{ base_directory }}/elasticsearch/config/elk.env
+ExecStart={{ base_directory }}/elasticsearch/elasticsearch/bin/elasticsearch
+Type=simple
+User={{ user }}
+Group={{ group }}
+LimitNOFILE=65536
+LimitNPROC=4096
+LimitMEMLOCK=infinity
+
+[Install]
+WantedBy=multi-user.target

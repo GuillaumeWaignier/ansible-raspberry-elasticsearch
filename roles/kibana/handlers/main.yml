@@ -1,0 +1,18 @@
+---
+
+- name: Restart Kibana
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kibana.service
+  listen: restart_kibana
+
+- name: Wait for kibana to be OK
+  command: "{{ base_directory }}/kibana/kibana-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_kibana
+  
+...

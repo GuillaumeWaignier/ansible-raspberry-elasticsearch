@@ -1,0 +1,59 @@
+---
+- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+  with_items:
+    - nodejs
+
+
+- name: Download nodejs
+  get_url:
+    url: "https://nodejs.org/dist/v10.21.0/node-v{{ version }}-linux-armv7l.tar.xz"
+    dest: "{{ base_directory }}/nodejs"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
+- name: Extract nodejs on {{ ansible_default_ipv4.address }}
+  unarchive:
+    src: "{{ base_directory }}/nodejs//node-v{{ version }}-linux-armv7l.tar.xz"
+    dest: "{{ base_directory }}/nodejs/"
+    owner: "root"
+    group: "root"
+    remote_src: yes
+  
+
+- name: Remove NodeJS apt version on {{ ansible_default_ipv4.address }}
+  apt:
+    name: nodejs
+    state: absent
+
+- name: Remove old node on {{ ansible_default_ipv4.address }}
+  apt:
+    name: node
+    state: absent
+
+- name: Create symbolic link for node to nodejs on {{ ansible_default_ipv4.address }}
+  file:
+    src: "{{ base_directory }}/nodejs/node-v{{ version }}-linux-armv7l/bin/node"
+    dest: /usr/local/bin/node
+    owner: root
+    group: root
+    state: link
+
+...
+
+
+

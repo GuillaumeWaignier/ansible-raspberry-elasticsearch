@@ -1,0 +1,122 @@
+---
+
+- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+  group:
+    name: "{{ group }}"
+    state: present
+- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    createhome: no
+    shell: /bin/bash
+    state: present
+- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+
+    
+- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "{{ base_directory }}/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - elasticsearch
+    - elasticsearch/config
+    - elasticsearch/data
+    - elasticsearch/log
+  notify: restart_elasticsearch
+
+
+- name: Download Elasticsearch
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/elasticsearch"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
+- name: Extract elasticsearch on {{ ansible_default_ipv4.address }}
+  unarchive:
+    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/elasticsearch"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+  notify: restart_elasticsearch
+
+- name: Symlink for elasticsearch on {{ ansible_default_ipv4.address }}
+  file:
+    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}"
+    path: "{{ base_directory }}/elasticsearch/elasticsearch"
+    state: link
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_elasticsearch
+  
+- name: Configure {{ item }} for Elasticsearch on {{ ansible_default_ipv4.address }}
+  template:
+    src: templates/{{ item }}.j2
+    dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: 0644
+  with_items:
+    - elk.env
+    - jvm.options
+    - elasticsearch.yml
+    - log4j2.properties
+  notify: restart_elasticsearch
+
+
+- name: Add Healthcheck script for elasticsearch on {{ ansible_default_ipv4.address }}
+  template:
+    src: "elasticsearch-healthcheck.sh.j2"
+    dest: "{{ base_directory }}/elasticsearch/elasticsearch-healthcheck.sh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0744
+  notify: restart_elasticsearch
+    
+- name: Add or modify nofile soft limit on {{ ansible_default_ipv4.address }}
+  pam_limits:
+    domain: "{{ user }}"
+    limit_type: "-"
+    limit_item: nofile
+    value: 65536
+  notify: restart_elasticsearch
+
+- name: OS Tuning
+  sysctl:
+    sysctl_file: /etc/sysctl.d/elasticsearch.conf
+    reload: yes
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  with_items: "{{ os_tuning }}"
+  notify: restart_elasticsearch
+    
+- name: Service systemD for Elasticsearch on {{ ansible_default_ipv4.address }}
+  template:
+    src: templates/elasticsearch.service.j2
+    dest: /etc/systemd/system/elasticsearch.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_elasticsearch
+  
+- name: Enable service elasticsearch
+  systemd:
+    enabled: yes
+    daemon_reload: yes
+    name: elasticsearch.service
+
+...

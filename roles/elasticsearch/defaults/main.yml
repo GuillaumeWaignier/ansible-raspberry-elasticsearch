@@ -1,0 +1,16 @@
+---
+
+# user/ group to run Elasticserach
+user: elastic
+group: elastic
+
+base_directory: /elk
+version: 7.8.1
+clusterName: elk
+
+network_host: 0.0.0.0
+
+# Required version of Java
+java_version: 11
+
+...

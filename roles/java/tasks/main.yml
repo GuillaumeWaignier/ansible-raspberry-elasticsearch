@@ -1,0 +1,8 @@
+---
+- name: Install Java for armv7l
+  apt:
+    name: openjdk-{{ version }}-jdk
+    state: present
+  when: ansible_architecture == "armv7l"
+
+...

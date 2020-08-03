@@ -1,0 +1,6 @@
+---
+
+dependencies:
+  - { role: java, version: "{{ java_version }}" }
+
+...

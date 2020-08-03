@@ -1,0 +1,24 @@
+---
+# Install Kibana and Elasticserach
+# Elasticserach is private (listen on localhost)
+# Kibana is private (listen on localhost and base path is /kibana)
+# Kibana need a reverse proxy to be exposed such as nginx
+
+
+- name: Install elasticsearch
+  hosts: elasticsearch
+  roles:
+    - role: elasticsearch
+      tags: elasticsearch
+      vars:
+        - network_host: "localhost"
+
+- name: Install kibana
+  hosts: kibana
+  roles:
+    - role: kibana
+      tags: kibana
+      vars:
+        - server_host: "localhost"
+        - server_basepath: "/kibana"
+...

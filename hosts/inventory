@@ -1,0 +1,14 @@
+all:
+  vars:                        
+    ansible_connection: ssh    
+    ansible_user: pi
+
+elasticsearch:
+  hosts:
+    192.168.2.10:
+
+
+kibana:
+  hosts:
+    192.168.2.10:
+
