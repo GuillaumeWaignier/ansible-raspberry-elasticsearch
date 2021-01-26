@@ -12,6 +12,7 @@
       tags: elasticsearch
       vars:
         - network_host: "localhost"
+        - version: 7.10.2
 
 - name: Install kibana
   hosts: kibana
@@ -21,4 +22,5 @@
       vars:
         - server_host: "localhost"
         - server_basepath: "/kibana"
+        - version: 7.10.2
 ...

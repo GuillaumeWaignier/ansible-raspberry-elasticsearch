@@ -3,7 +3,7 @@ Description=Kibana for the ELK stack
 After=elasticsearch.target
 
 [Service]
-ExecStart=/usr/local/bin/node --no-warnings {{ base_directory }}/kibana/kibana/src/cli -c {{ base_directory }}/kibana/config/kibana.yml
+ExecStart=/usr/local/bin/node --no-warnings {{ base_directory }}/kibana/kibana/src/cli/dist -c {{ base_directory }}/kibana/config/kibana.yml
 Type=simple
 User={{ user }}
 Group={{ group }}
