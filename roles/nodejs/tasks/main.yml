@@ -20,7 +20,7 @@
 
 - name: Download nodejs
   get_url:
-    url: "https://nodejs.org/dist/v10.21.0/node-v{{ version }}-linux-armv7l.tar.xz"
+    url: "https://nodejs.org/dist/v{{ version}}/node-v{{ version }}-linux-armv7l.tar.xz"
     dest: "{{ base_directory }}/nodejs"
     mode: '0644'
     owner: "{{ user }}"
