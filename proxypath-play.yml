@@ -1,6 +1,6 @@
 ---
 # Install Kibana and Elasticserach
-# Elasticserach is private (listen on localhost)
+# Elasticsearch is private (listen on localhost)
 # Kibana is private (listen on localhost and base path is /kibana)
 # Kibana need a reverse proxy to be exposed such as nginx
 
