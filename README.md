@@ -17,7 +17,7 @@ To change parameters, such as version, create the file as
   - role: elasticsearch
     tags: elasticsearch
     vars:
-      - version: "7.8.1"
+      - version: "7.10.2"
       - network_host: "localhost"
 
 - name: Install kibana
@@ -26,7 +26,7 @@ To change parameters, such as version, create the file as
   - role: kibana
     tags: kibana
     vars:
-      - version: "7.8.1"
+      - version: "7.10.2"
       - server_host: "localhost"
       - server_basepath: "/kibana"
 ```
