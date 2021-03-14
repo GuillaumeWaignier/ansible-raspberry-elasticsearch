@@ -7,6 +7,7 @@ ExecStart=/usr/local/bin/node --no-warnings {{ base_directory }}/kibana/kibana/s
 Type=simple
 User={{ user }}
 Group={{ group }}
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
