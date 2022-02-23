@@ -36,21 +36,23 @@
   notify: restart_elasticsearch
 
 
-- name: Download Elasticsearch
+- name: Download Elasticsearch for armv7l
   get_url:
     url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/elasticsearch"
     mode: '0644'
     owner: "{{ user }}"
     group: "{{ group }}"
+  when: ansible_architecture == "armv7l"
 
-- name: Extract elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Extract elasticsearch on {{ ansible_default_ipv4.address }} for armv7l
   unarchive:
     src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/elasticsearch"
     owner: "{{ user }}"
     group: "{{ group }}"
     remote_src: yes
+  when: ansible_architecture == "armv7l"
   notify: restart_elasticsearch
 
 - name: Symlink for elasticsearch on {{ ansible_default_ipv4.address }}

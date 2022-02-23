@@ -36,15 +36,16 @@
   notify: restart_kibana
 
 
-- name: Download Kibana
+- name: Download Kibana for armv7l
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana"
     mode: '0644'
     owner: "{{ user }}"
     group: "{{ group }}"
+  when: ansible_architecture == "armv7l"
 
-- name: Extract kibana on {{ ansible_default_ipv4.address }}
+- name: Extract kibana on {{ ansible_default_ipv4.address }} for armv7l
   unarchive:
     src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana"
@@ -52,6 +53,7 @@
     group: "{{ group }}"
     exclude: kibana-{{ version }}-linux-x86_64/optimize/.babelcache.json
     remote_src: yes
+  when: ansible_architecture == "armv7l"
   notify: restart_kibana
 
 - name: Symlink for kibana on {{ ansible_default_ipv4.address }}

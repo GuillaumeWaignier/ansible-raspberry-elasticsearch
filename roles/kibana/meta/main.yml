@@ -1,6 +1,6 @@
 ---
 
 dependencies:
-  - { role: nodejs, version: "{{ node_version }}" }
+  - { role: nodejs, version: "{{ node_version }}", when: ansible_architecture == "armv7l" }
 
 ...
