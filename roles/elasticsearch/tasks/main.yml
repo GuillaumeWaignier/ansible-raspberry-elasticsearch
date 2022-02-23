@@ -55,6 +55,25 @@
   when: ansible_architecture == "armv7l"
   notify: restart_elasticsearch
 
+- name: Download Elasticsearch for aarch64
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-aarch64.tar.gz"
+    dest: "{{ base_directory }}/elasticsearch"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
+- name: Extract elasticsearch on {{ ansible_default_ipv4.address }} for aarch64
+  unarchive:
+    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}-linux-aarch64.tar.gz"
+    dest: "{{ base_directory }}/elasticsearch"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+  when: ansible_architecture == "aarch64"
+  notify: restart_elasticsearch
+
 - name: Symlink for elasticsearch on {{ ansible_default_ipv4.address }}
   file:
     src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}"

@@ -5,4 +5,9 @@
     state: present
   when: ansible_architecture == "armv7l"
 
+- name: Install Java for aarch64
+  apt:
+    name: openjdk-{{ version }}-jdk
+    state: present
+  when: ansible_architecture == "aarch64"
 ...
