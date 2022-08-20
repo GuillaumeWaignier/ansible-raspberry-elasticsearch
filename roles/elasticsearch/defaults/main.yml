@@ -8,6 +8,8 @@ base_directory: /elk
 version: 7.10.2
 clusterName: elk
 
+heap: 254m
+
 network_host: 0.0.0.0
 
 # Required version of Java
