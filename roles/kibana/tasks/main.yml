@@ -39,24 +39,45 @@
 - name: Download Kibana for armv7l
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
-    dest: "{{ base_directory }}/kibana"
+    dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
     mode: '0644'
+    force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   when: ansible_architecture == "armv7l"
 
-- name: Extract kibana on {{ ansible_default_ipv4.address }} for armv7l
+- name: Download Kibana for aarch64
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-aarch64.tar.gz"
+    dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
+    mode: '0644'
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
+- name: Download Kibana for x86_64
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
+    mode: '0644'
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "x86_64"
+
+- name: Extract kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
   unarchive:
-    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
+    src: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/kibana"
     owner: "{{ user }}"
     group: "{{ group }}"
     exclude: kibana-{{ version }}-linux-x86_64/optimize/.babelcache.json
     remote_src: yes
-  when: ansible_architecture == "armv7l"
+  when: ansible_architecture == "armv7l" or ansible_architecture == "x86_64"
   notify: restart_kibana
 
-- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for armv7l
+- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
   file:
     src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64"
     path: "{{ base_directory }}/kibana/kibana"
@@ -64,20 +85,13 @@
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
+  when: ansible_architecture == "armv7l" or ansible_architecture == "x86_64"
   notify: restart_kibana
 
-- name: Download Kibana for aarch64
-  get_url:
-    url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-aarch64.tar.gz"
-    dest: "{{ base_directory }}/kibana"
-    mode: '0644'
-    owner: "{{ user }}"
-    group: "{{ group }}"
-  when: ansible_architecture == "aarch64"
 
 - name: Extract kibana on {{ ansible_default_ipv4.address }} for aarch64
   unarchive:
-    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-aarch64.tar.gz"
+    src: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/kibana"
     owner: "{{ user }}"
     group: "{{ group }}"
@@ -94,6 +108,7 @@
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
   notify: restart_kibana
   
 - name: Configure {{ item }} for Kibana on {{ ansible_default_ipv4.address }}

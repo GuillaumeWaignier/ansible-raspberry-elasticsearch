@@ -1,5 +1,10 @@
 ---
 
+- name: Install curl
+  apt:
+    name: curl
+    state: present
+
 - name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
   group:
     name: "{{ group }}"
@@ -39,39 +44,40 @@
 - name: Download Elasticsearch for armv7l
   get_url:
     url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
-    dest: "{{ base_directory }}/elasticsearch"
+    dest: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}.tar.gz"
     mode: '0644'
+    force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   when: ansible_architecture == "armv7l"
-
-- name: Extract elasticsearch on {{ ansible_default_ipv4.address }} for armv7l
-  unarchive:
-    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
-    dest: "{{ base_directory }}/elasticsearch"
-    owner: "{{ user }}"
-    group: "{{ group }}"
-    remote_src: yes
-  when: ansible_architecture == "armv7l"
-  notify: restart_elasticsearch
 
 - name: Download Elasticsearch for aarch64
   get_url:
     url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-aarch64.tar.gz"
-    dest: "{{ base_directory }}/elasticsearch"
+    dest: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}.tar.gz"
     mode: '0644'
+    force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   when: ansible_architecture == "aarch64"
 
-- name: Extract elasticsearch on {{ ansible_default_ipv4.address }} for aarch64
+- name: Download Elasticsearch for x86_64
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "x86_64"
+
+- name: Extract elasticsearch on {{ ansible_default_ipv4.address }}
   unarchive:
-    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}-linux-aarch64.tar.gz"
+    src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/elasticsearch"
     owner: "{{ user }}"
     group: "{{ group }}"
     remote_src: yes
-  when: ansible_architecture == "aarch64"
   notify: restart_elasticsearch
 
 - name: Symlink for elasticsearch on {{ ansible_default_ipv4.address }}

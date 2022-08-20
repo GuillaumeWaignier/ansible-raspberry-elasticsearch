@@ -6,7 +6,7 @@ After=elasticsearch.target
 {% if ansible_architecture == "armv7l" %}
 ExecStart=/usr/local/bin/node --no-warnings {{ base_directory }}/kibana/kibana/src/cli/dist -c {{ base_directory }}/kibana/config/kibana.yml
 {% endif %}
-{% if ansible_architecture == "aarch64" %}
+{% if ansible_architecture == "aarch64" or ansible_architecture == "x86_64" %}
 ExecStart={{ base_directory }}/kibana/kibana/bin/kibana -c {{ base_directory }}/kibana/config/kibana.yml
 {% endif %}
 Type=simple
