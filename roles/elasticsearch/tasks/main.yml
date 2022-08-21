@@ -104,6 +104,16 @@
     - log4j2.properties
   notify: restart_elasticsearch
 
+- name: Copy certificates on {{ ansible_default_ipv4.address }}
+  copy:
+    src: "/tmp/es/{{ item }}"
+    dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - node-{{ ansible_default_ipv4.address }}.key
+    - node-{{ ansible_default_ipv4.address }}.crt
+    - ca.crt
 
 - name: Add Healthcheck script for elasticsearch on {{ ansible_default_ipv4.address }}
   template:

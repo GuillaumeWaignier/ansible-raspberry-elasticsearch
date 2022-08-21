@@ -3,17 +3,42 @@
 # Elasticsearch is exposed on port 9200
 # Kibana is exposed on port 5601
 
+- hosts: all
+  vars_prompt:
+    - name: password
+      prompt: elasticsearch password
+  tasks:
+    - set_fact: password={{ password }}
+      no_log: true
+
+
+- name: Create all certificates
+  hosts: certificate
+  roles:
+    - role: certificate
+      tags: certificate
+  vars_prompt:
+    - name: ca_passphrase
+      prompt: CA password
 
 - name: Install elasticsearch
   hosts: elasticsearch
   roles:
   - role: elasticsearch
     tags: elasticsearch
+    vars:
+      - network_host: "0.0.0.0"
+      - heap: 8g
+      - version: 7.13.3
+
 
 - name: Install kibana
   hosts: kibana
   roles:
   - role: kibana
     tags: kibana
-
+    vars:
+      - server_host: "0.0.0.0"
+      - server_basepath: ""
+      - version: 7.10.2
 ...

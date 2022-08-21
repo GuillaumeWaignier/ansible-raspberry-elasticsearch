@@ -4,6 +4,13 @@
 # Kibana is private (listen on localhost and base path is /kibana)
 # Kibana need a reverse proxy to be exposed such as nginx
 
+- hosts: all
+  vars_prompt:
+    - name: password
+      prompt: elasticsearch password
+  tasks:
+    - set_fact: password={{ password }}
+      no_log: true
 
 - name: Install elasticsearch
   hosts: elasticsearch
@@ -14,6 +21,7 @@
         - network_host: "localhost"
         - heap: 8g
         - version: 7.13.3
+
 
 - name: Install kibana
   hosts: kibana

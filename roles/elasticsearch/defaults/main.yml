@@ -12,6 +12,8 @@ heap: 254m
 
 network_host: 0.0.0.0
 
+password: test
+
 # Required version of Java
 java_version: 11
 

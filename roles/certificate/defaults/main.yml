@@ -1,0 +1,12 @@
+---
+
+
+base_directory: /elk/elasticCertificate
+
+# root certificate
+ca_passphrase: azerty
+
+# node certificate
+
+
+...

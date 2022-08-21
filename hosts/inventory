@@ -12,3 +12,6 @@ kibana:
   hosts:
     192.168.2.15:
 
+certificate:
+  hosts:
+    192.168.2.15:

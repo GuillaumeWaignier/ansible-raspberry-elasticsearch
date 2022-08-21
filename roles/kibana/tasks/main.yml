@@ -122,6 +122,17 @@
     - kibana.yml
   notify: restart_kibana
 
+- name: Copy certificates on {{ ansible_default_ipv4.address }}
+  copy:
+    src: "/tmp/es/{{ item }}"
+    dest: "{{ base_directory }}/kibana/config/{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - ca.crt
+    - kibana-{{ ansible_default_ipv4.address }}.key
+    - kibana-{{ ansible_default_ipv4.address }}.crt
+
 - name: Add Healthcheck script for Kibana on {{ ansible_default_ipv4.address }}
   template:
     src: "kibana-healthcheck.sh.j2"
