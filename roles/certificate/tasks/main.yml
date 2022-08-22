@@ -1,5 +1,17 @@
 ---
 
+############# REQUIREMENT #################
+
+- name: Install Pip
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Install python-openssl
+  apt:
+    name: python3-openssl
+    state: present
+
 - name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}"
@@ -44,6 +56,7 @@
     src: "{{ base_directory }}/ca.crt"
     dest: "/tmp/es/"
     flat: yes
+  changed_when: false
 
 ############# GENERATE NODE CERTIFICATE #################
 
@@ -59,6 +72,7 @@
     dest: "/tmp/es/"
     flat: yes
   loop: "{{ groups['elasticsearch'] }}"
+  changed_when: false
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information for node
   openssl_csr:
@@ -92,6 +106,7 @@
     dest: "/tmp/es/"
     flat: yes
   loop: "{{ groups['elasticsearch'] }}"
+  changed_when: false
 
 
 ############# GENERATE KIBANA CERTIFICATE #################
@@ -108,6 +123,7 @@
     dest: "/tmp/es/"
     flat: yes
   loop: "{{ groups['kibana'] }}"
+  changed_when: false
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information for kibana
   openssl_csr:
@@ -141,5 +157,6 @@
     dest: "/tmp/es/"
     flat: yes
   loop: "{{ groups['kibana'] }}"
+  changed_when: false
 
 ...
