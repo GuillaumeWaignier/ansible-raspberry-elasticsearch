@@ -134,6 +134,18 @@
     - kibana-{{ ansible_default_ipv4.address }}.crt
   notify: restart_kibana
 
+- name: Copy certificate authority to trusted ca path of the os {{ ansible_default_ipv4.address }}
+  copy:
+    src: "{{ base_directory }}/kibana/config/{{ item }}"
+    dest: "/usr/local/share/ca-certificates/"
+    owner: "root"
+    group: "root"
+    mode: 0644
+    remote_src: yes
+  with_items:
+    - ca.crt
+  notify: install_ca
+
 - name: Add Healthcheck script for Kibana on {{ ansible_default_ipv4.address }}
   template:
     src: "kibana-healthcheck.sh.j2"

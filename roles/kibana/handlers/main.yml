@@ -14,5 +14,8 @@
   retries: 10
   delay: 20
   listen: restart_kibana
-  
+
+- name: Update trusted CA
+  shell: /usr/sbin/update-ca-certificates
+  listen: install_ca
 ...
