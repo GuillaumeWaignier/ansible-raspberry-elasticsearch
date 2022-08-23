@@ -114,6 +114,7 @@
     - node-{{ ansible_default_ipv4.address }}.key
     - node-{{ ansible_default_ipv4.address }}.crt
     - ca.crt
+  notify: restart_elasticsearch
 
 - name: Add Healthcheck script for elasticsearch on {{ ansible_default_ipv4.address }}
   template:

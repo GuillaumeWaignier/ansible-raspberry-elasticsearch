@@ -132,6 +132,7 @@
     - ca.crt
     - kibana-{{ ansible_default_ipv4.address }}.key
     - kibana-{{ ansible_default_ipv4.address }}.crt
+  notify: restart_kibana
 
 - name: Add Healthcheck script for Kibana on {{ ansible_default_ipv4.address }}
   template:

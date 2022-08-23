@@ -1,10 +1,19 @@
 ---
 
 
-base_directory: /elk/elasticCertificate
+base_directory: /certificates
 
 # root certificate
 ca_passphrase: azerty
+
+country_name: MyCountry
+state_or_province_name: MyState
+locality_name: MyCity
+organization_name: MyOrg
+organizational_unit_name: MyUnit
+email_address: MyMail
+common_name: ca
+
 
 # node certificate
 
