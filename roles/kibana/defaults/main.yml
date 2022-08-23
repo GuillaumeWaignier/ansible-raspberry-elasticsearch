@@ -5,6 +5,7 @@ group: kibana
 base_directory: /elk
 version: 7.10.2
 
+encryptionKey: "gtf(gGtagdujry4H.!lry4zjx7s#hdirq=rt4Ft5!i5&ga"
 
 server_host: "0.0.0.0"
 server_basepath: ""

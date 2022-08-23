@@ -1,0 +1,42 @@
+path.home: {{ base_directory }}/metricbeat/metricbeat
+path.config: {{ base_directory }}/metricbeat/config
+path.data: {{ base_directory }}/metricbeat/data
+path.logs: {{ base_directory }}/metricbeat/log
+
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+setup.kibana:
+
+  # Kibana Host
+  # Scheme and port can be left out and will be set to the default (http and 5601)
+  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+  #host: "localhost:5601"
+
+  # Kibana Space ID
+  # ID of the Kibana Space into which the dashboards should be loaded. By default,
+  # the Default Space will be used.
+  #space.id:
+
+output.elasticsearch:
+  hosts:
+  {% for host in groups['elasticsearch'] %}
+    - "https://{{ host }}:9200"
+  {% endfor %}
+
+  username: "remote_monitoring_user"
+  password: "{{ password }}"
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+

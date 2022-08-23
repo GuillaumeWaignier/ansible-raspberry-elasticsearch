@@ -1,0 +1,6 @@
+- module: kibana
+  xpack.enabled: true
+  period: 10s
+  hosts: [ "https://{{ ansible_default_ipv4.address }}:5601" ]
+  username: "remote_monitoring_user"
+  password: "{{ password }}"

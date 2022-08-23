@@ -1,6 +1,6 @@
 #!/bin/sh
 
-state=`curl -s -k -u elastic:{{ password }} https://localhost:9200/_cluster/health?pretty | grep green`
+state=`curl -k -s -u elastic:{{ password }} https://{{ ansible_default_ipv4.address }}:9200/_cluster/health?pretty | grep green`
 server=$?
 
 if [ "$server" -eq 0 ] && [ ! -z "$state" ]

@@ -1,0 +1,12 @@
+---
+
+# user/ group to run Elasticserach
+user: metricbeat
+group: metricbeat
+
+base_directory: /elk
+version: 7.10.2
+
+password: test
+
+...

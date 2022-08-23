@@ -1,0 +1,7 @@
+- module: elasticsearch
+  xpack.enabled: true
+  period: 10s
+  hosts: [ "https://{{ ansible_default_ipv4.address }}:9200" ]
+  scope: node
+  username: "remote_monitoring_user"
+  password: "{{ password }}"
