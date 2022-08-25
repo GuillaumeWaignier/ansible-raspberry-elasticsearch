@@ -1,0 +1,20 @@
+---
+
+- name: restart filebeat
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: filebeat.service
+  listen: restart_filebeat
+
+    
+- name: Wait for filebeat to be OK
+  command: "{{ base_directory }}/filebeat/filebeat-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_filebeat
+
+  
+...

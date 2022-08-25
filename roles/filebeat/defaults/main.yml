@@ -1,0 +1,16 @@
+---
+
+# user/ group to run filebeat
+user: filebeat
+group: filebeat
+
+base_directory: /elk
+version: 7.10.2
+
+monitoring_port: 5067
+
+password: test
+
+
+
+...
