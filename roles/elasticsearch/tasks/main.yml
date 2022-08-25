@@ -113,8 +113,9 @@
 
 - name: Copy raw configuration file for Elasticsearch on {{ ansible_default_ipv4.address }}
   copy:
-    src: files/{{ item }}
+    src: "{{ base_directory }}/elasticsearch/elasticsearch/config/{{ item }}"
     dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
+    remote_src: yes
     owner: "{{user}}"
     group: "{{group}}"
     mode: 0644
