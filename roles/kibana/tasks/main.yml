@@ -31,10 +31,18 @@
   with_items:
     - kibana
     - kibana/config
-    - kibana/log
     - kibana/data
   notify: restart_kibana
 
+- name: Ensure log file exists
+  copy:
+    content: ""
+    dest: /var/log/kibana.log
+    force: no
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  notify: restart_kibana
 
 - name: Download Kibana for armv7l
   get_url:
