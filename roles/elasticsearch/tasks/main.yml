@@ -36,10 +36,18 @@
   with_items:
     - elasticsearch
     - elasticsearch/config
+    - elasticsearch/config/jvm.options.d
     - elasticsearch/data
-    - elasticsearch/log
   notify: restart_elasticsearch
 
+- name: Create log directory on {{ ansible_default_ipv4.address }}
+  file:
+    path: "/var/log/elasticsearch"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_elasticsearch
 
 - name: Download Elasticsearch for armv7l
   get_url:
@@ -99,8 +107,19 @@
     mode: 0644
   with_items:
     - elk.env
-    - jvm.options
     - elasticsearch.yml
+    - jvm.options.d/heap.options
+  notify: restart_elasticsearch
+
+- name: Copy raw configuration file for Elasticsearch on {{ ansible_default_ipv4.address }}
+  copy:
+    src: files/{{ item }}
+    dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: 0644
+  with_items:
+    - jvm.options
     - log4j2.properties
   notify: restart_elasticsearch
 

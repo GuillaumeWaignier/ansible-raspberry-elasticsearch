@@ -6,7 +6,7 @@ cluster.name: {{ clusterName }}
 node.name: {{ inventory_hostname }}
 
 path.data: {{ base_directory }}/elasticsearch/data
-path.logs: {{ base_directory }}/elasticsearch/log
+path.logs: /var/log/elasticsearch
 
 bootstrap.memory_lock: true
 
