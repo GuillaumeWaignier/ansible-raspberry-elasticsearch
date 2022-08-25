@@ -27,11 +27,10 @@ setup.kibana:
 
 output.elasticsearch:
   hosts:
-  {% for host in groups['elasticsearch'] %}
+{% for host in groups['elasticsearch'] %}
     - "https://{{ host }}:9200"
-  {% endfor %}
-
-  username: "remote_monitoring_user"
+{% endfor %}
+  username: "elastic"
   password: "{{ password }}"
 
 processors:
@@ -40,3 +39,11 @@ processors:
   - add_docker_metadata: ~
   - add_kubernetes_metadata: ~
 
+http.enabled: true
+http.port: {{ monitoring_port }}
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    username: beats_system
+    password: "{{ password }}"

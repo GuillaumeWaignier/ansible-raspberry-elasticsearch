@@ -1,6 +1,5 @@
 [Unit]
 Description=Metricbeat for the ELK stack
-After=kibana.target
 
 [Service]
 {% if ansible_architecture == "x86_64" %}
