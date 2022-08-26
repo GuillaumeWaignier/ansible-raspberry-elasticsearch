@@ -32,6 +32,7 @@ output.elasticsearch:
 {% endfor %}
   username: "elastic"
   password: "{{ password }}"
+  loadbalance: true
 
 processors:
   - add_host_metadata: ~

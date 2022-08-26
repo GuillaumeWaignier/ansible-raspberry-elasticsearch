@@ -58,6 +58,7 @@ output.elasticsearch:
 {% endfor %}
   username: "elastic"
   password: "{{ password }}"
+  loadbalance: true
 
 
 processors:
