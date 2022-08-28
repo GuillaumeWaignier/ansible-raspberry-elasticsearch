@@ -29,7 +29,7 @@
     - role: kibana
       tags: kibana
       vars:
-        - server_host: "localhost"
+        - expose_on_localhost: "yes"
         - server_basepath: "/kibana"
         - version: 7.10.2
 ...

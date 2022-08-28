@@ -1,12 +1,26 @@
 # {{ ansible_managed }}
 
 server.port: 5601
-server.host: "{{ server_host }}"
+{% if expose_on_localhost == 'yes' %}
+server.host: "localhost"
+{% else %}
+server.host: "0.0.0.0"
+{% endif %}
 
 {% if server_basepath == '' %}
 # server.basePath: ""
+{% if expose_on_localhost == 'yes' %}
+server.publicBaseUrl: "https://localhost:5601"
+{% else %}
+server.publicBaseUrl: "https://{{ ansible_default_ipv4.address }}:5601"
+{% endif %}
 {% else %}
 server.basePath: "{{ server_basepath }}"
+{% if expose_on_localhost == 'yes' %}
+server.publicBaseUrl: "https://localhost:5601/{{ server_basepath }}"
+{% else %}
+server.publicBaseUrl: "https://{{ ansible_default_ipv4.address }}:5601/{{ server_basepath }}"
+{% endif %}
 {% endif %}
 
 elasticsearch.hosts:

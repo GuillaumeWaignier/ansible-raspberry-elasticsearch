@@ -38,7 +38,7 @@
   - role: kibana
     tags: kibana
     vars:
-      - server_host: "0.0.0.0"
+      - expose_on_localhost: "no"
       - server_basepath: ""
       - version: 7.10.2
 ...
