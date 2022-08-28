@@ -33,6 +33,20 @@ To change parameters, such as version, create the file as
 
 The host(s) of the PI are in file _inventory_.
 
+The first install, you need to create manually the users:
+```bash
+# remove elasticsearch.keystore in config dir
+rm sudo rm /elk/config/elasticsearch.keystore
+# Restart elasticsearch
+sudo systemctl restart elasticsearch.service
+# sudo as elasticsearch user
+sudo su elastic
+# Export env (shown in elk.env)
+export ES_PATH_CONF=/elk/elasticsearch/config/
+# Generate password
+/elk/elasticsearch/elasticsearch/bin/elasticsearch-setup-passwords interactive
+```
+
 
 # Example 1
 
