@@ -8,6 +8,7 @@
   user:
     name: "{{ user }}"
     group: "{{ group }}"
+    groups: "{{ group }},adm"
     createhome: no
     shell: /bin/bash
     state: present
@@ -74,6 +75,7 @@
     mode: 0644
   with_items:
     - filebeat.yml
+    - modules.d/system.yml
   notify: restart_filebeat
 
 - name: Configure elasticsearch for filebeat on {{ ansible_default_ipv4.address }}
