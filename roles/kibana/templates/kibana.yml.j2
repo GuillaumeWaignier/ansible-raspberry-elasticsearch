@@ -32,7 +32,6 @@ elasticsearch.username: "kibana_system"
 elasticsearch.password: "{{ password }}"
 
 path.data: {{ base_directory }}/kibana/data/
-logging.dest: /var/log/kibana.log
 
 server.ssl.enabled: true
 server.ssl.certificate: {{ base_directory }}/kibana/config/kibana-{{ ansible_default_ipv4.address }}.crt
@@ -40,3 +39,14 @@ server.ssl.key: {{ base_directory }}/kibana/config/kibana-{{ ansible_default_ipv
 elasticsearch.ssl.certificateAuthorities: [ "{{ base_directory }}/kibana/config/ca.crt" ]
 
 xpack.encryptedSavedObjects.encryptionKey: {{ encryptionKey }}
+
+
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana.log
+      layout:
+        type: json
+  root:
+    appenders: [default, file]
