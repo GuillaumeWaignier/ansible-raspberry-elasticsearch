@@ -13,7 +13,7 @@ bootstrap.memory_lock: true
 network.host: {{ network_host }}
 transport.host: {{ network_host }}
 http.port: 9200
-transport.tcp.port: 9300
+transport.port: 9300
 
 #Version 7
 discovery.seed_hosts:
@@ -21,8 +21,6 @@ discovery.seed_hosts:
     - "{{ host }}:9300"
 {% endfor %}
 
-discovery.zen.minimum_master_nodes: {{  (groups['elasticsearch']|length / 2)|int + 1 }}
-gateway.recover_after_nodes: {{ groups['elasticsearch']|length }}
 
 xpack.ml.enabled: false
 
@@ -40,6 +38,7 @@ xpack.security.transport.ssl.certificate_authorities: ca.crt
 
 {% if groups['elasticsearch']|length == 1 %}
 discovery.type: single-node
+cluster.routing.allocation.disk.watermark.enable_for_single_data_node: true
 {% else %}
 cluster.initial_master_nodes:
 {% for host in groups['elasticsearch'] %}
