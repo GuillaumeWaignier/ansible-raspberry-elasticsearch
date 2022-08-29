@@ -1,0 +1,14 @@
+[Unit]
+Description=Packetbeat for the ELK stack
+
+[Service]
+{% if ansible_architecture == "x86_64" %}
+ExecStart={{ base_directory }}/packetbeat/packetbeat/packetbeat -c {{ base_directory }}/packetbeat/config/packetbeat.yml
+{% endif %}
+Type=simple
+User={{user}}
+Group={{group}}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

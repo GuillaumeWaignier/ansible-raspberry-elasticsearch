@@ -1,0 +1,20 @@
+---
+
+- name: restart packetbeat
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: packetbeat.service
+  listen: restart_packetbeat
+
+    
+- name: Wait for packetbeat to be OK
+  command: "{{ base_directory }}/packetbeat/packetbeat-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_packetbeat
+
+  
+...

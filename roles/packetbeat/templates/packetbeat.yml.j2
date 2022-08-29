@@ -1,0 +1,146 @@
+path.home: {{ base_directory }}/packetbeat/packetbeat
+path.config: {{ base_directory }}/packetbeat/config
+path.data: {{ base_directory }}/packetbeat/data
+path.logs: {{ base_directory }}/packetbeat/log
+
+
+packetbeat.interfaces.device: any
+packetbeat.interfaces.type: af_packet
+
+packetbeat.interfaces.internal_networks:
+  - private
+
+
+packetbeat.flows:
+  timeout: 30s
+  period: 10s
+
+packetbeat.protocols:
+- type: icmp
+  # Enable ICMPv4 and ICMPv6 monitoring. The default is true.
+  enabled: true
+
+- type: amqp
+  # Configure the ports where to listen for AMQP traffic. You can disable
+  # the AMQP protocol by commenting out the list of ports.
+  ports: [5672]
+
+- type: cassandra
+  # Configure the ports where to listen for Cassandra traffic. You can disable
+  # the Cassandra protocol by commenting out the list of ports.
+  ports: [9042]
+
+- type: dhcpv4
+  # Configure the DHCP for IPv4 ports.
+  ports: [67, 68]
+
+- type: dns
+  # Configure the ports where to listen for DNS traffic. You can disable
+  # the DNS protocol by commenting out the list of ports.
+  ports: [53]
+
+- type: http
+  # Configure the ports where to listen for HTTP traffic. You can disable
+  # the HTTP protocol by commenting out the list of ports.
+  ports: [80, 8080, 8000, 5000, 8002]
+
+- type: memcache
+  # Configure the ports where to listen for memcache traffic. You can disable
+  # the Memcache protocol by commenting out the list of ports.
+  ports: [11211]
+
+- type: mysql
+  # Configure the ports where to listen for MySQL traffic. You can disable
+  # the MySQL protocol by commenting out the list of ports.
+  ports: [3306,3307]
+
+- type: pgsql
+  # Configure the ports where to listen for Pgsql traffic. You can disable
+  # the Pgsql protocol by commenting out the list of ports.
+  ports: [5432]
+
+- type: redis
+  # Configure the ports where to listen for Redis traffic. You can disable
+  # the Redis protocol by commenting out the list of ports.
+  ports: [6379]
+
+- type: thrift
+  # Configure the ports where to listen for Thrift-RPC traffic. You can disable
+  # the Thrift-RPC protocol by commenting out the list of ports.
+  ports: [9090]
+
+- type: mongodb
+  # Configure the ports where to listen for MongoDB traffic. You can disable
+  # the MongoDB protocol by commenting out the list of ports.
+  ports: [27017]
+
+- type: nfs
+  # Configure the ports where to listen for NFS traffic. You can disable
+  # the NFS protocol by commenting out the list of ports.
+  ports: [2049]
+
+- type: tls
+  # Configure the ports where to listen for TLS traffic. You can disable
+  # the TLS protocol by commenting out the list of ports.
+  ports:
+    - 443   # HTTPS
+    - 993   # IMAPS
+    - 995   # POP3S
+    - 5223  # XMPP over SSL
+    - 8443
+    - 8883  # Secure MQTT
+    - 9243  # Elasticsearch
+
+- type: sip
+  # Configure the ports where to listen for SIP traffic. You can disable
+  # the SIP protocol by commenting out the list of ports.
+  ports: [5060]
+
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+
+setup.dashboards.enabled: true
+
+setup.kibana:
+  host: "https://{{ groups['kibana'][0] }}:5601"
+
+output.elasticsearch:
+  hosts:
+{% for host in groups['elasticsearch'] %}
+    - "https://{{ host }}:9200"
+{% endfor %}
+  username: "elastic"
+  password: "{{ password }}"
+  loadbalance: true
+
+
+
+processors:
+  - # Add forwarded to tags when processing data from a network tap or mirror.
+    if.contains.tags: forwarded
+    then:
+      - drop_fields:
+          fields: [host]
+    else:
+      - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - detect_mime_type:
+      field: http.request.body.content
+      target: http.request.mime_type
+  - detect_mime_type:
+      field: http.response.body.content
+      target: http.response.mime_type
+
+
+http.enabled: true
+http.port: {{ monitoring_port }}
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    username: beats_system
+    password: "{{ password }}"

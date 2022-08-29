@@ -1,0 +1,16 @@
+---
+
+# user/ group to run packetbeat
+user: root
+group: root
+
+base_directory: /elk
+version: 7.10.2
+
+monitoring_port: 5068
+
+password: test
+
+
+
+...
