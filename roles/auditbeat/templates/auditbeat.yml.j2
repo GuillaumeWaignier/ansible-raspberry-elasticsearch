@@ -1,0 +1,64 @@
+path.home: {{ base_directory }}/auditbeat/auditbeat
+path.config: {{ base_directory }}/auditbeat/config
+path.data: {{ base_directory }}/auditbeat/data
+path.logs: {{ base_directory }}/auditbeat/log
+
+auditbeat.modules:
+- module: auditd
+  audit_rule_files: [ '${path.config}/audit.rules.d/*.conf' ]
+  audit_rules: |
+    ## Define audit rules here.
+    ## Create file watches (-w) or syscall audits (-a or -A). Uncomment these
+
+- module: system
+  datasets:
+    - package # Installed, updated, and removed packages
+  period: 2m # The frequency at which the datasets check for changes
+
+- module: system
+  datasets:
+    - host    # General host information, e.g. uptime, IPs
+    - login   # User logins, logouts, and system boots.
+    - process # Started and stopped processes
+    - socket  # Opened and closed sockets
+    - user    # User information
+  state.period: 12h
+
+  user.detect_password_changes: true
+
+  login.wtmp_file_pattern: /var/log/wtmp*
+  login.btmp_file_pattern: /var/log/btmp*
+
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+
+setup.dashboards.enabled: true
+
+setup.kibana:
+  host: "https://{{ groups['kibana'][0] }}:5601"
+
+output.elasticsearch:
+  hosts:
+{% for host in groups['elasticsearch'] %}
+    - "https://{{ host }}:9200"
+{% endfor %}
+  username: "elastic"
+  password: "{{ password }}"
+  loadbalance: true
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+http.enabled: true
+http.port: {{ monitoring_port }}
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    username: beats_system
+    password: "{{ password }}"

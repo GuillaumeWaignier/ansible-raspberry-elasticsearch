@@ -1,0 +1,20 @@
+---
+
+- name: restart auditbeat
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: auditbeat.service
+  listen: restart_auditbeat
+
+    
+- name: Wait for auditbeat to be OK
+  command: "{{ base_directory }}/auditbeat/auditbeat-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_auditbeat
+
+  
+...
