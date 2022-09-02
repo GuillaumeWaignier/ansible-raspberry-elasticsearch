@@ -10,6 +10,14 @@ auditbeat.modules:
     ## Define audit rules here.
     ## Create file watches (-w) or syscall audits (-a or -A). Uncomment these
 
+- module: file_integrity
+  paths:
+  - /bin
+  - /usr/bin
+  - /sbin
+  - /usr/sbin
+  - /etc
+
 - module: system
   datasets:
     - package # Installed, updated, and removed packages
