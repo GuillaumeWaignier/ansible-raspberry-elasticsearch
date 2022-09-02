@@ -85,18 +85,6 @@
   when: ansible_architecture == "armv7l" or ansible_architecture == "x86_64"
   notify: restart_kibana
 
-- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
-  file:
-    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-x86_64"
-    path: "{{ base_directory }}/kibana/kibana"
-    state: link
-    force: yes
-    owner: "{{ user }}"
-    group: "{{ group }}"
-  when: ansible_architecture == "armv7l" or ansible_architecture == "x86_64"
-  notify: restart_kibana
-
-
 - name: Extract kibana on {{ ansible_default_ipv4.address }} for aarch64
   unarchive:
     src: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -108,17 +96,22 @@
   when: ansible_architecture == "aarch64"
   notify: restart_kibana
 
-- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for aarch64
+- name: Retrieve directory name after extraction of the archive
+  shell:
+    cmd: "ls -d {{ base_directory }}/kibana/kibana-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
+- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
   file:
-    src: "{{ base_directory }}/kibana/kibana-{{ version }}-linux-aarch64"
+    src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/kibana/kibana"
     state: link
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
-  when: ansible_architecture == "aarch64"
   notify: restart_kibana
-  
+
 - name: Configure {{ item }} for Kibana on {{ ansible_default_ipv4.address }}
   template:
     src: templates/{{ item }}.j2
