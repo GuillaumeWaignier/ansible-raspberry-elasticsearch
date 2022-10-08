@@ -20,7 +20,7 @@
     group: "root"
 
 
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -35,7 +35,7 @@
     - metricbeat/data
   notify: restart_metricbeat
 
-- name: Download metricbeat for x86_64
+- name: Download metricbeat for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"

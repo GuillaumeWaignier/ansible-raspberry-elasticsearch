@@ -21,7 +21,7 @@
     group: "root"
 
 
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create files directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -35,7 +35,34 @@
     - packetbeat/data
   notify: restart_packetbeat
 
-- name: Download packetbeat for x86_64
+
+
+- name: Get geoip pipeline
+  uri:
+    method: GET
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    return_content: yes
+  failed_when: false
+  register: elastic_geoip_pipeline
+  changed_when: false
+
+- name: Put geoip pipeline
+  uri:
+    method: PUT
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    body_format: json
+    body: "{{ lookup('file', 'pipeline-geoip.json') }}"
+  changed_when: true
+  #when: >-
+
+
+- name: Download packetbeat for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}.tar.gz"

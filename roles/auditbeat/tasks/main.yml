@@ -20,7 +20,7 @@
     group: "root"
 
 
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -35,7 +35,7 @@
     - auditbeat/data
   notify: restart_auditbeat
 
-- name: Download auditbeat for x86_64
+- name: Download auditbeat for x86_64 in version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/auditbeat/auditbeat-{{ version }}.tar.gz"

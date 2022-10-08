@@ -20,8 +20,7 @@
     group: "root"
 
 
-
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -34,7 +33,7 @@
     - kibana/data
   notify: restart_kibana
 
-- name: Ensure log file exists
+- name: Ensure log file exists on {{ ansible_default_ipv4.address }}
   copy:
     content: ""
     dest: /var/log/kibana.log
@@ -44,7 +43,7 @@
     mode: 0644
   notify: restart_kibana
 
-- name: Download Kibana for armv7l
+- name: Download Kibana for armv7l on {{ ansible_default_ipv4.address }} with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -54,7 +53,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "armv7l"
 
-- name: Download Kibana for aarch64
+- name: Download Kibana for aarch64 on {{ ansible_default_ipv4.address }} with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-aarch64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -64,7 +63,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "aarch64"
 
-- name: Download Kibana for x86_64
+- name: Download Kibana for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -112,7 +111,7 @@
     group: "{{ group }}"
   notify: restart_kibana
 
-- name: Configure {{ item }} for Kibana on {{ ansible_default_ipv4.address }}
+- name: Configure files for Kibana on {{ ansible_default_ipv4.address }}
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/kibana/config/{{ item }}"

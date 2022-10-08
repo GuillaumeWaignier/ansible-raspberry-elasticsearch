@@ -21,7 +21,7 @@
     group: "root"
 
 
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory on {{ ansible_default_ipv4.address }}
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -36,7 +36,7 @@
     - filebeat/data
   notify: restart_filebeat
 
-- name: Download filebeat for x86_64
+- name: Download filebeat for x86_64 with version {{ version }} on {{ ansible_default_ipv4.address }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/filebeat/filebeat-{{ version }}.tar.gz"

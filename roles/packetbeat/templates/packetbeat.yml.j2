@@ -115,7 +115,7 @@ output.elasticsearch:
   username: "elastic"
   password: "{{ password }}"
   loadbalance: true
-
+  pipeline: geoip-info
 
 
 processors:
@@ -134,7 +134,22 @@ processors:
   - detect_mime_type:
       field: http.response.body.content
       target: http.response.mime_type
-
+{% for item in private_network %}
+  - add_fields:
+      when.network.source.ip: {{ item.ip }}
+      fields:
+        source.geo.location:
+          lat: {{ item.lat }}
+          lon: {{ item.lon }}
+      target: ''
+  - add_fields:
+      when.network.destination.ip: {{ item.ip }}
+      fields:
+        destination.geo.location:
+          lat: {{ item.lat }}
+          lon: {{ item.lon }}
+      target: ''
+{% endfor %}
 
 http.enabled: true
 http.port: {{ monitoring_port }}
