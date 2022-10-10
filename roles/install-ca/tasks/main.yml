@@ -1,0 +1,11 @@
+---
+
+- name: Copy CA certificates
+  copy:
+    src: "/tmp/es/ca.crt"
+    dest: "/usr/local/share/ca-certificates/ca.crt"
+    owner: "root"
+    group: "root"
+  notify: install_ca
+
+...

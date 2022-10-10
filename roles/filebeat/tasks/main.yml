@@ -72,6 +72,16 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
+- name: Download filebeat for aarch64 with version {{ version }} on {{ ansible_default_ipv4.address }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ version }}-linux-arm64.tar.gz"
+    dest: "{{ base_directory }}/filebeat/filebeat-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
 - name: Extract filebeat on {{ ansible_default_ipv4.address }}
   unarchive:
     src: "{{ base_directory }}/filebeat/filebeat-{{ version }}.tar.gz"
@@ -81,16 +91,21 @@
     remote_src: yes
   notify: restart_filebeat
 
+- name: Retrieve directory name after extraction of the archive on {{ ansible_default_ipv4.address }}
+  shell:
+    cmd: "ls -d {{ base_directory }}/filebeat/filebeat-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
 - name: Symlink for filebeat on {{ ansible_default_ipv4.address }}
   file:
-    src: "{{ base_directory }}/filebeat/filebeat-{{ version }}-linux-x86_64"
+    src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/filebeat/filebeat"
     state: link
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   notify: restart_filebeat
-  when: ansible_architecture == "x86_64"
 
 - name: Configure general conf for filebeat on {{ ansible_default_ipv4.address }}
   template:

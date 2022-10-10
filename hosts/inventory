@@ -19,6 +19,7 @@ certificate:
 filebeat:
   hosts:
     192.168.2.15:
+    192.168.0.18:
 
 metricbeat:
   hosts:

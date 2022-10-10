@@ -3,9 +3,7 @@ Description=Filebeat for the ELK stack
 After=kibana.target
 
 [Service]
-{% if ansible_architecture == "x86_64" %}
 ExecStart={{ base_directory }}/filebeat/filebeat/filebeat -c {{ base_directory }}/filebeat/config/filebeat.yml
-{% endif %}
 Type=simple
 User={{ user }}
 Group={{ group }}
