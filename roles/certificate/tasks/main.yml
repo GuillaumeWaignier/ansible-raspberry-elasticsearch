@@ -154,6 +154,7 @@
     ownca_path: "{{ base_directory }}/ca.crt"
     ownca_privatekey_path: "{{ base_directory }}/ca.pem"
     ownca_privatekey_passphrase: "{{ ca_passphrase }}"
+    ownca_not_after: "+824d"
     provider: ownca
   loop: "{{ groups['kibana'] }}"
 
