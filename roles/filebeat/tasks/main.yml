@@ -36,6 +36,32 @@
     - filebeat/data
   notify: restart_filebeat
 
+
+- name: Get geoip pipeline
+  uri:
+    method: GET
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    return_content: yes
+  failed_when: false
+  register: elastic_geoip_pipeline
+  changed_when: false
+
+- name: Put geoip pipeline
+  uri:
+    method: PUT
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    body_format: json
+    body: "{{ lookup('file', 'pipeline-geoip.json') }}"
+  changed_when: false
+  #when: >-
+
+
 - name: Download filebeat for x86_64 with version {{ version }} on {{ ansible_default_ipv4.address }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ version }}-linux-x86_64.tar.gz"

@@ -38,6 +38,7 @@ output.elasticsearch:
   username: "elastic"
   password: "{{ password }}"
   loadbalance: true
+  pipeline: geoip-info
 
 
 processors:
@@ -46,6 +47,22 @@ processors:
   - add_cloud_metadata: ~
   - add_docker_metadata: ~
   - add_kubernetes_metadata: ~
+{% for item in private_network %}
+  - add_fields:
+      when.network.source.ip: {{ item.ip }}
+      fields:
+        source.geo.location:
+          lat: {{ item.lat }}
+          lon: {{ item.lon }}
+      target: ''
+  - add_fields:
+      when.network.destination.ip: {{ item.ip }}
+      fields:
+        destination.geo.location:
+          lat: {{ item.lat }}
+          lon: {{ item.lon }}
+      target: ''
+{% endfor %}
 
 http.enabled: true
 http.port: {{ monitoring_port }}

@@ -11,6 +11,15 @@ monitoring_port: 5069
 
 password: test
 
-
+private_network:
+  - ip: 192.168.0.0/24
+    lat: 50.633333
+    lon: 3.066667
+  - ip: 192.168.1.0/24
+    lat: 50.633333
+    lon: 3.066667
+  - ip: 192.168.2.0/24
+    lat: 50.633333
+    lon: 3.066667
 
 ...

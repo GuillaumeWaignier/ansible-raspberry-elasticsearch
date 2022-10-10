@@ -35,6 +35,31 @@
     - auditbeat/data
   notify: restart_auditbeat
 
+
+- name: Get geoip pipeline
+  uri:
+    method: GET
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    return_content: yes
+  failed_when: false
+  register: elastic_geoip_pipeline
+  changed_when: false
+
+- name: Put geoip pipeline
+  uri:
+    method: PUT
+    url: "https://{{ groups['elasticsearch'][0] }}:9200/_ingest/pipeline/geoip-info"
+    validate_certs: no
+    url_password: "{{ password }}"
+    url_username: "elastic"
+    body_format: json
+    body: "{{ lookup('file', 'pipeline-geoip.json') }}"
+  changed_when: false
+  #when: >-
+
 - name: Download auditbeat for x86_64 in version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-{{ version }}-linux-x86_64.tar.gz"
