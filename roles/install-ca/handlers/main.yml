@@ -1,7 +1,7 @@
 ---
 
-- name: Install CA
-  command: "update-ca-certificates"
+- name: Update trusted CA
+  command: "/usr/sbin/update-ca-certificates"
   listen: install_ca
 
 ...

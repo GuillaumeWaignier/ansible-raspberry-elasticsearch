@@ -1,11 +1,12 @@
 ---
 
-- name: Copy CA certificates
+- name: Copy certificate authority to trusted ca path of the os
   copy:
     src: "/tmp/es/ca.crt"
     dest: "/usr/local/share/ca-certificates/ca.crt"
     owner: "root"
     group: "root"
+    mode: 0644
   notify: install_ca
 
 ...
