@@ -1,17 +1,17 @@
 ---
 
-- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+- name: Add {{ group }} group
   group:
     name: "{{ group }}"
     state: present
-- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+- name: Create {{ user }} user
   user:
     name: "{{ user }}"
     group: "{{ group }}"
     createhome: no
     shell: /bin/bash
     state: present
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -20,7 +20,7 @@
     group: "root"
 
 
-- name: Create sub-directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -70,7 +70,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
-- name: Extract auditbeat on {{ ansible_default_ipv4.address }}
+- name: Extract auditbeat
   unarchive:
     src: "{{ base_directory }}/auditbeat/auditbeat-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/auditbeat"
@@ -79,7 +79,7 @@
     remote_src: yes
   notify: restart_auditbeat
 
-- name: Symlink for auditbeat on {{ ansible_default_ipv4.address }}
+- name: Symlink for auditbeat
   file:
     src: "{{ base_directory }}/auditbeat/auditbeat-{{ version }}-linux-x86_64"
     path: "{{ base_directory }}/auditbeat/auditbeat"
@@ -90,7 +90,7 @@
   notify: restart_auditbeat
   when: ansible_architecture == "x86_64"
 
-- name: Configure general conf for auditbeat on {{ ansible_default_ipv4.address }}
+- name: Configure general conf for auditbeat
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/auditbeat/config/{{ item }}"
@@ -103,7 +103,7 @@
   notify: restart_auditbeat
 
 
-- name: Add Healthcheck script for auditbeat on {{ ansible_default_ipv4.address }}
+- name: Add Healthcheck script for auditbeat
   template:
     src: "auditbeat-healthcheck.sh.j2"
     dest: "{{ base_directory }}/auditbeat/auditbeat-healthcheck.sh"

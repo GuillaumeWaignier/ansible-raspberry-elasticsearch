@@ -1,10 +1,10 @@
 ---
 
-- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+- name: Add {{ group }} group
   group:
     name: "{{ group }}"
     state: present
-- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+- name: Create {{ user }} user
   user:
     name: "{{ user }}"
     group: "{{ group }}"
@@ -12,7 +12,7 @@
     createhome: no
     shell: /bin/bash
     state: present
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -21,7 +21,7 @@
     group: "root"
 
 
-- name: Create files directory on {{ ansible_default_ipv4.address }}
+- name: Create files directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -62,7 +62,7 @@
   #when: >-
 
 
-- name: Download packetbeat for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
+- name: Download packetbeat for x86_64 with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}.tar.gz"
@@ -72,7 +72,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
-- name: Extract packetbeat on {{ ansible_default_ipv4.address }}
+- name: Extract packetbeat
   unarchive:
     src: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/packetbeat"
@@ -81,7 +81,7 @@
     remote_src: yes
   notify: restart_packetbeat
 
-- name: Symlink for packetbeat on {{ ansible_default_ipv4.address }}
+- name: Symlink for packetbeat
   file:
     src: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}-linux-x86_64"
     path: "{{ base_directory }}/packetbeat/packetbeat"
@@ -92,7 +92,7 @@
   notify: restart_packetbeat
   when: ansible_architecture == "x86_64"
 
-- name: Configure general conf for packetbeat on {{ ansible_default_ipv4.address }}
+- name: Configure general conf for packetbeat
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/packetbeat/config/{{ item }}"
@@ -104,7 +104,7 @@
   notify: restart_packetbeat
 
 
-- name: Add Healthcheck script for packetbeat on {{ ansible_default_ipv4.address }}
+- name: Add Healthcheck script for packetbeat
   template:
     src: "packetbeat-healthcheck.sh.j2"
     dest: "{{ base_directory }}/packetbeat/packetbeat-healthcheck.sh"
@@ -113,7 +113,7 @@
     mode: 0744
   notify: restart_packetbeat
 
-- name: Service systemD for packetbeat on {{ ansible_default_ipv4.address }}
+- name: Service systemD for packetbeat
   template:
     src: templates/packetbeat.service.j2
     dest: /etc/systemd/system/packetbeat.service

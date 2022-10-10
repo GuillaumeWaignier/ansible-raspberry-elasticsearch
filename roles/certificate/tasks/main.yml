@@ -12,7 +12,7 @@
     name: python3-openssl
     state: present
 
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory

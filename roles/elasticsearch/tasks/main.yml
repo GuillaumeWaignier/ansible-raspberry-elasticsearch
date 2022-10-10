@@ -5,18 +5,18 @@
     name: curl
     state: present
 
-- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+- name: Add {{ group }} group
   group:
     name: "{{ group }}"
     state: present
-- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+- name: Create {{ user }} user
   user:
     name: "{{ user }}"
     group: "{{ group }}"
     createhome: no
     shell: /bin/bash
     state: present
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -24,9 +24,7 @@
     owner: "root"
     group: "root"
 
-
-    
-- name: Create sub-directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -40,7 +38,7 @@
     - elasticsearch/data
   notify: restart_elasticsearch
 
-- name: Create log directory on {{ ansible_default_ipv4.address }}
+- name: Create log directory
   file:
     path: "/var/log/elasticsearch"
     state: directory
@@ -79,7 +77,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
-- name: Extract elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Extract elasticsearch
   unarchive:
     src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/elasticsearch"
@@ -88,7 +86,7 @@
     remote_src: yes
   notify: restart_elasticsearch
 
-- name: Symlink for elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Symlink for elasticsearch
   file:
     src: "{{ base_directory }}/elasticsearch/elasticsearch-{{ version }}"
     path: "{{ base_directory }}/elasticsearch/elasticsearch"
@@ -98,7 +96,7 @@
     group: "{{ group }}"
   notify: restart_elasticsearch
   
-- name: Configure files for Elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Configure files for Elasticsearch
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
@@ -111,7 +109,7 @@
     - jvm.options.d/heap.options
   notify: restart_elasticsearch
 
-- name: Copy raw configuration file for Elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Copy raw configuration file for Elasticsearch
   copy:
     src: "{{ base_directory }}/elasticsearch/elasticsearch/config/{{ item }}"
     dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
@@ -124,7 +122,7 @@
     - log4j2.properties
   notify: restart_elasticsearch
 
-- name: Copy certificates on {{ ansible_default_ipv4.address }}
+- name: Copy certificates
   copy:
     src: "/tmp/es/{{ item }}"
     dest: "{{ base_directory }}/elasticsearch/config/{{ item }}"
@@ -136,7 +134,7 @@
     - ca.crt
   notify: restart_elasticsearch
 
-- name: Add Healthcheck script for elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Add Healthcheck script for elasticsearch
   template:
     src: "elasticsearch-healthcheck.sh.j2"
     dest: "{{ base_directory }}/elasticsearch/elasticsearch-healthcheck.sh"
@@ -145,7 +143,7 @@
     mode: 0744
   notify: restart_elasticsearch
     
-- name: Add or modify nofile soft limit on {{ ansible_default_ipv4.address }}
+- name: Add or modify nofile soft limit
   pam_limits:
     domain: "{{ user }}"
     limit_type: "-"
@@ -153,7 +151,7 @@
     value: 65536
   notify: restart_elasticsearch
 
-- name: OS Tuning on {{ ansible_default_ipv4.address }}
+- name: OS Tuning
   sysctl:
     sysctl_file: /etc/sysctl.d/elasticsearch.conf
     reload: yes
@@ -162,7 +160,7 @@
   with_items: "{{ os_tuning }}"
   notify: restart_elasticsearch
     
-- name: Service systemD for Elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Service systemD for Elasticsearch
   template:
     src: templates/elasticsearch.service.j2
     dest: /etc/systemd/system/elasticsearch.service
@@ -171,7 +169,7 @@
     mode: 0644
   notify: restart_elasticsearch
   
-- name: Enable service elasticsearch on {{ ansible_default_ipv4.address }}
+- name: Enable service elasticsearch
   systemd:
     enabled: yes
     daemon_reload: yes

@@ -1,17 +1,17 @@
 ---
 
-- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+- name: Add {{ group }} group
   group:
     name: "{{ group }}"
     state: present
-- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+- name: Create {{ user }} user
   user:
     name: "{{ user }}"
     group: "{{ group }}"
     createhome: no
     shell: /bin/bash
     state: present
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -20,7 +20,7 @@
     group: "root"
 
 
-- name: Create sub-directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -35,7 +35,7 @@
     - metricbeat/data
   notify: restart_metricbeat
 
-- name: Download metricbeat for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
+- name: Download metricbeat for x86_64 with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"
@@ -45,7 +45,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
-- name: Download metricbeat for aarch64 with version {{ version }} on {{ ansible_default_ipv4.address }}
+- name: Download metricbeat for aarch64 with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-{{ version }}-linux-arm64.tar.gz"
     dest: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"
@@ -55,7 +55,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "aarch64"
 
-- name: Extract metricbeat on {{ ansible_default_ipv4.address }}
+- name: Extract metricbeat
   unarchive:
     src: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/metricbeat"
@@ -64,13 +64,13 @@
     remote_src: yes
   notify: restart_metricbeat
 
-- name: Retrieve directory name after extraction of the archive on {{ ansible_default_ipv4.address }}
+- name: Retrieve directory name after extraction of the archive
   shell:
     cmd: "ls -d {{ base_directory }}/metricbeat/metricbeat-{{ version }}*/ | sed 's/.$//'"
   register: directory_name
   changed_when: false
 
-- name: Symlink for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Symlink for metricbeat
   file:
     src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/metricbeat/metricbeat"
@@ -80,7 +80,7 @@
     group: "{{ group }}"
   notify: restart_metricbeat
 
-- name: Configure general conf for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Configure general conf for metricbeat
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/metricbeat/config/{{ item }}"
@@ -92,7 +92,7 @@
     - modules.d/system.yml
   notify: restart_metricbeat
 
-- name: Configure elasticsearch for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Configure elasticsearch for metricbeat
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/metricbeat/config/{{ item }}"
@@ -104,7 +104,7 @@
   notify: restart_metricbeat
   when: "'elasticsearch' in group_names"
 
-- name: Configure kibana for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Configure kibana for metricbeat
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/metricbeat/config/{{ item }}"
@@ -117,7 +117,7 @@
   when: "'kibana' in group_names"
 
 
-- name: Add Healthcheck script for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Add Healthcheck script for metricbeat
   template:
     src: "metricbeat-healthcheck.sh.j2"
     dest: "{{ base_directory }}/metricbeat/metricbeat-healthcheck.sh"
@@ -126,7 +126,7 @@
     mode: 0744
   notify: restart_metricbeat
 
-- name: Service systemD for metricbeat on {{ ansible_default_ipv4.address }}
+- name: Service systemD for metricbeat
   template:
     src: templates/metricbeat.service.j2
     dest: /etc/systemd/system/metricbeat.service

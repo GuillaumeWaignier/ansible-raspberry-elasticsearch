@@ -1,17 +1,17 @@
 ---
 
-- name: Add {{ group }} group on {{ ansible_default_ipv4.address }}
+- name: Add {{ group }} group
   group:
     name: "{{ group }}"
     state: present
-- name: Create {{ user }} user on {{ ansible_default_ipv4.address }}
+- name: Create {{ user }} user
   user:
     name: "{{ user }}"
     group: "{{ group }}"
     createhome: no
     shell: /bin/bash
     state: present
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -20,7 +20,7 @@
     group: "root"
 
 
-- name: Create sub-directory on {{ ansible_default_ipv4.address }}
+- name: Create sub-directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -33,7 +33,7 @@
     - kibana/data
   notify: restart_kibana
 
-- name: Ensure log file exists on {{ ansible_default_ipv4.address }}
+- name: Ensure log file exists
   copy:
     content: ""
     dest: /var/log/kibana.log
@@ -43,7 +43,7 @@
     mode: 0644
   notify: restart_kibana
 
-- name: Download Kibana for armv7l on {{ ansible_default_ipv4.address }} with version {{ version }}
+- name: Download Kibana for armv7l with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -53,7 +53,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "armv7l"
 
-- name: Download Kibana for aarch64 on {{ ansible_default_ipv4.address }} with version {{ version }}
+- name: Download Kibana for aarch64 with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-aarch64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -63,7 +63,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "aarch64"
 
-- name: Download Kibana for x86_64 on {{ ansible_default_ipv4.address }} with version {{ version }}
+- name: Download Kibana for x86_64 with version {{ version }}
   get_url:
     url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ version }}-linux-x86_64.tar.gz"
     dest: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
@@ -73,7 +73,7 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
-- name: Extract kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
+- name: Extract kibana for armv7l or amd64
   unarchive:
     src: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/kibana"
@@ -84,7 +84,7 @@
   when: ansible_architecture == "armv7l" or ansible_architecture == "x86_64"
   notify: restart_kibana
 
-- name: Extract kibana on {{ ansible_default_ipv4.address }} for aarch64
+- name: Extract kibana for aarch64
   unarchive:
     src: "{{ base_directory }}/kibana/kibana-{{ version }}.tar.gz"
     dest: "{{ base_directory }}/kibana"
@@ -101,7 +101,7 @@
   register: directory_name
   changed_when: false
 
-- name: Symlink for kibana on {{ ansible_default_ipv4.address }} for armv7l or amd64
+- name: Symlink for kibana
   file:
     src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/kibana/kibana"
@@ -111,7 +111,7 @@
     group: "{{ group }}"
   notify: restart_kibana
 
-- name: Configure files for Kibana on {{ ansible_default_ipv4.address }}
+- name: Configure files for Kibana
   template:
     src: templates/{{ item }}.j2
     dest: "{{ base_directory }}/kibana/config/{{ item }}"
@@ -122,7 +122,7 @@
     - kibana.yml
   notify: restart_kibana
 
-- name: Copy certificates on {{ ansible_default_ipv4.address }}
+- name: Copy certificates
   copy:
     src: "/tmp/es/{{ item }}"
     dest: "{{ base_directory }}/kibana/config/{{ item }}"
@@ -134,7 +134,7 @@
     - kibana-{{ ansible_default_ipv4.address }}.crt
   notify: restart_kibana
 
-- name: Copy certificate authority to trusted ca path of the os {{ ansible_default_ipv4.address }}
+- name: Copy certificate authority to trusted ca path of the os
   copy:
     src: "{{ base_directory }}/kibana/config/{{ item }}"
     dest: "/usr/local/share/ca-certificates/"
@@ -146,7 +146,7 @@
     - ca.crt
   notify: install_ca
 
-- name: Add Healthcheck script for Kibana on {{ ansible_default_ipv4.address }}
+- name: Add Healthcheck script for Kibana
   template:
     src: "kibana-healthcheck.sh.j2"
     dest: "{{ base_directory }}/kibana/kibana-healthcheck.sh"
@@ -155,7 +155,7 @@
     mode: 0744
   notify: restart_kibana
 
-- name: Service systemD for Kibana on {{ ansible_default_ipv4.address }}
+- name: Service systemD for Kibana
   template:
     src: templates/kibana.service.j2
     dest: /etc/systemd/system/kibana.service

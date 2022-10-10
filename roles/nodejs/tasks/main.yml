@@ -1,5 +1,5 @@
 ---
-- name: Create {{ base_directory }} directory on {{ ansible_default_ipv4.address }}
+- name: Create {{ base_directory }} directory
   file:
     path: "{{ base_directory }}"
     state: directory
@@ -7,7 +7,7 @@
     owner: "root"
     group: "root"
 
-- name: Create {{ item }} directory on {{ ansible_default_ipv4.address }}
+- name: Create directory
   file:
     path: "{{ base_directory }}/{{ item }}"
     state: directory
@@ -26,7 +26,7 @@
     owner: "{{ user }}"
     group: "{{ group }}"
 
-- name: Extract nodejs on {{ ansible_default_ipv4.address }}
+- name: Extract nodejs
   unarchive:
     src: "{{ base_directory }}/nodejs//node-v{{ version }}-linux-armv7l.tar.xz"
     dest: "{{ base_directory }}/nodejs/"
@@ -35,17 +35,17 @@
     remote_src: yes
   
 
-- name: Remove NodeJS apt version on {{ ansible_default_ipv4.address }}
+- name: Remove NodeJS apt version
   apt:
     name: nodejs
     state: absent
 
-- name: Remove old node on {{ ansible_default_ipv4.address }}
+- name: Remove old node
   apt:
     name: node
     state: absent
 
-- name: Create symbolic link for node to nodejs on {{ ansible_default_ipv4.address }}
+- name: Create symbolic link for node to nodejs
   file:
     src: "{{ base_directory }}/nodejs/node-v{{ version }}-linux-armv7l/bin/node"
     dest: /usr/local/bin/node
