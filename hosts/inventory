@@ -15,3 +15,19 @@ kibana:
 certificate:
   hosts:
     192.168.2.15:
+
+filebeat:
+  hosts:
+    192.168.2.15:
+
+metricbeat:
+  hosts:
+    192.168.2.15:
+
+auditbeat:
+  hosts:
+    192.168.2.15:
+
+packetbeat:
+  hosts:
+    192.168.2.15:
