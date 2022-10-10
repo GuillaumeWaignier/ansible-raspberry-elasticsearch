@@ -3,9 +3,7 @@ Description=Metricbeat for the ELK stack
 After=kibana.target
 
 [Service]
-{% if ansible_architecture == "x86_64" %}
 ExecStart={{ base_directory }}/metricbeat/metricbeat/metricbeat -c {{ base_directory }}/metricbeat/config/metricbeat.yml
-{% endif %}
 Type=simple
 User={{ user }}
 Group={{ group }}

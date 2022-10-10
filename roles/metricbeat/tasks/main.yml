@@ -45,6 +45,16 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
+- name: Download metricbeat for aarch64 with version {{ version }} on {{ ansible_default_ipv4.address }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-{{ version }}-linux-arm64.tar.gz"
+    dest: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
 - name: Extract metricbeat on {{ ansible_default_ipv4.address }}
   unarchive:
     src: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}.tar.gz"
@@ -54,16 +64,21 @@
     remote_src: yes
   notify: restart_metricbeat
 
+- name: Retrieve directory name after extraction of the archive on {{ ansible_default_ipv4.address }}
+  shell:
+    cmd: "ls -d {{ base_directory }}/metricbeat/metricbeat-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
 - name: Symlink for metricbeat on {{ ansible_default_ipv4.address }}
   file:
-    src: "{{ base_directory }}/metricbeat/metricbeat-{{ version }}-linux-x86_64"
+    src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/metricbeat/metricbeat"
     state: link
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   notify: restart_metricbeat
-  when: ansible_architecture == "x86_64"
 
 - name: Configure general conf for metricbeat on {{ ansible_default_ipv4.address }}
   template:
