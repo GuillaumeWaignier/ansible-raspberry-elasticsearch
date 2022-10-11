@@ -72,6 +72,16 @@
     group: "{{ group }}"
   when: ansible_architecture == "x86_64"
 
+- name: Download packetbeat for aarch64 with version {{ version }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-{{ version }}-linux-arm64.tar.gz"
+    dest: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
 - name: Extract packetbeat
   unarchive:
     src: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}.tar.gz"
@@ -81,16 +91,21 @@
     remote_src: yes
   notify: restart_packetbeat
 
+- name: Retrieve directory name after extraction of the archive
+  shell:
+    cmd: "ls -d {{ base_directory }}/packetbeat/packetbeat-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
 - name: Symlink for packetbeat
   file:
-    src: "{{ base_directory }}/packetbeat/packetbeat-{{ version }}-linux-x86_64"
+    src: "{{ directory_name.stdout }}"
     path: "{{ base_directory }}/packetbeat/packetbeat"
     state: link
     force: yes
     owner: "{{ user }}"
     group: "{{ group }}"
   notify: restart_packetbeat
-  when: ansible_architecture == "x86_64"
 
 - name: Configure general conf for packetbeat
   template:
