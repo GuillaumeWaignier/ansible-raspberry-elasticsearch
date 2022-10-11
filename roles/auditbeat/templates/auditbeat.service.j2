@@ -3,9 +3,7 @@ Description=Auditbeat for the ELK stack
 After=kibana.target
 
 [Service]
-{% if ansible_architecture == "x86_64" %}
 ExecStart={{ base_directory }}/auditbeat/auditbeat/auditbeat -c {{ base_directory }}/auditbeat/config/auditbeat.yml
-{% endif %}
 Type=simple
 User={{user}}
 Group={{group}}

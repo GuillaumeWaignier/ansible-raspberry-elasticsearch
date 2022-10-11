@@ -28,8 +28,10 @@ auditbeat.modules:
     - host    # General host information, e.g. uptime, IPs
     - login   # User logins, logouts, and system boots.
     - process # Started and stopped processes
-    - socket  # Opened and closed sockets
     - user    # User information
+{% if ansible_architecture == "x86_64" %}
+    - socket  # Opened and closed sockets
+{% endif %}
   state.period: 12h
 
   user.detect_password_changes: true
