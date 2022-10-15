@@ -7,12 +7,12 @@ path.logs: /var/log/filebeat
 filebeat.inputs:
 
 - type: filestream
-
-  id: my-filestream-id
-  enabled: false
+  id: beats-log
+  enabled: true
   paths:
-    - /var/log/*.log
-    #- c:\programdata\elasticsearch\logs\*
+    - /var/log/**/*.ndjson
+  parsers:
+    - ndjson: ~
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
@@ -72,3 +72,6 @@ monitoring:
   elasticsearch:
     username: beats_system
     password: "{{ password }}"
+
+logging.files:
+  permissions: 0644
