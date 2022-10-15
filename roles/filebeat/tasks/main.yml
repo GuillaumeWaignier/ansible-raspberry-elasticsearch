@@ -32,10 +32,17 @@
     - filebeat
     - filebeat/config
     - filebeat/config/modules.d
-    - filebeat/log
     - filebeat/data
   notify: restart_filebeat
 
+- name: Create log directory
+  file:
+    path: "/var/log/filebeat"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_filebeat
 
 - name: Get geoip pipeline
   uri:

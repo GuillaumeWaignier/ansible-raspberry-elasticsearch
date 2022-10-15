@@ -31,8 +31,16 @@
     - metricbeat
     - metricbeat/config
     - metricbeat/config/modules.d
-    - metricbeat/log
     - metricbeat/data
+  notify: restart_metricbeat
+
+- name: Create log directory
+  file:
+    path: "/var/log/metricbeat"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
   notify: restart_metricbeat
 
 - name: Download metricbeat for x86_64 with version {{ version }}

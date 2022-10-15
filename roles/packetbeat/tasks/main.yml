@@ -31,11 +31,17 @@
   with_items:
     - packetbeat
     - packetbeat/config
-    - packetbeat/log
     - packetbeat/data
   notify: restart_packetbeat
 
-
+- name: Create log directory
+  file:
+    path: "/var/log/packetbeat"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_packetbeat
 
 - name: Get geoip pipeline
   uri:

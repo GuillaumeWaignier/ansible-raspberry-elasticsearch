@@ -33,14 +33,13 @@
     - kibana/data
   notify: restart_kibana
 
-- name: Ensure log file exists
-  copy:
-    content: ""
-    dest: /var/log/kibana.log
-    force: no
+- name: Ensure log directory
+  file:
+    path: "/var/log/kibana"
+    state: directory
+    mode: 0755
     owner: "{{ user }}"
     group: "{{ group }}"
-    mode: 0644
   notify: restart_kibana
 
 - name: Download Kibana for armv7l with version {{ version }}

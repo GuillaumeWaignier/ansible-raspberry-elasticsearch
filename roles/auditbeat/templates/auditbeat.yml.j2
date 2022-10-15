@@ -1,7 +1,7 @@
 path.home: {{ base_directory }}/auditbeat/auditbeat
 path.config: {{ base_directory }}/auditbeat/config
 path.data: {{ base_directory }}/auditbeat/data
-path.logs: {{ base_directory }}/auditbeat/log
+path.logs: /var/log/auditbeat
 
 auditbeat.modules:
 - module: auditd

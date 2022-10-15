@@ -1,7 +1,7 @@
 path.home: {{ base_directory }}/metricbeat/metricbeat
 path.config: {{ base_directory }}/metricbeat/config
 path.data: {{ base_directory }}/metricbeat/data
-path.logs: {{ base_directory }}/metricbeat/log
+path.logs: /var/log/metricbeat
 
 metricbeat.config.modules:
   path: ${path.config}/modules.d/*.yml

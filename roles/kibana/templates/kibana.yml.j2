@@ -44,8 +44,8 @@ xpack.encryptedSavedObjects.encryptionKey: {{ encryptionKey }}
 logging:
   appenders:
     file:
-      type: file
-      fileName: /var/log/kibana.log
+      type: rolling-file
+      fileName: /var/log/kibana/kibana.log
       layout:
         type: json
   root:

@@ -31,10 +31,17 @@
     - auditbeat
     - auditbeat/config
     - auditbeat/config/audit.rules.d
-    - auditbeat/log
     - auditbeat/data
   notify: restart_auditbeat
 
+- name: Create log directory
+  file:
+    path: "/var/log/auditbeat"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_auditbeat
 
 - name: Get geoip pipeline
   uri:
