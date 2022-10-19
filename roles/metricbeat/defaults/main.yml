@@ -1,6 +1,6 @@
 ---
 
-# user/ group to run Elasticserach
+# user/ group to run metricbeat
 user: metricbeat
 group: metricbeat
 

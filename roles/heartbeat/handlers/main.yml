@@ -1,0 +1,20 @@
+---
+
+- name: restart heartbeat
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: heartbeat.service
+  listen: restart_heartbeat
+
+    
+- name: Wait for heartbeat to be OK
+  command: "{{ base_directory }}/heartbeat/heartbeat-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_heartbeat
+
+  
+...

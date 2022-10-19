@@ -1,6 +1,6 @@
 ---
 
-# user/ group to run packetbeat
+# user/ group to run auditbeat
 user: root
 group: root
 

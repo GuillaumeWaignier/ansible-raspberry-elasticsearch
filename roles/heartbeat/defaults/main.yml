@@ -1,0 +1,13 @@
+---
+
+user: heartbeat
+group: heartbeat
+
+base_directory: /elk
+version: 7.10.2
+
+monitoring_port: 5070
+
+password: test
+
+...

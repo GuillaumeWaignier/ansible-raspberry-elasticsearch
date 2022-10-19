@@ -1,0 +1,50 @@
+path.home: {{ base_directory }}/heartbeat/heartbeat
+path.config: {{ base_directory }}/heartbeat/config
+path.data: {{ base_directory }}/heartbeat/data
+path.logs: /var/log/heartbeat
+
+heartbeat.config.monitors:
+  path: ${path.config}/monitors.d/*.yml
+  reload.enabled: false
+  reload.period: 5s
+
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+
+setup.dashboards.enabled: false
+
+setup.kibana:
+  host: "https://{{ groups['kibana'][0] }}:5601"
+
+output.elasticsearch:
+  hosts:
+{% for host in groups['elasticsearch'] %}
+    - "https://{{ host }}:9200"
+{% endfor %}
+  username: "elastic"
+  password: "{{ password }}"
+  loadbalance: true
+
+processors:
+  - add_observer_metadata:
+      # Optional, but recommended geo settings for the location Heartbeat is running in
+      #geo:
+        # Token describing this location
+        #name: us-east-1a
+        # Lat, Lon "
+        #location: "37.926868, -78.024902"
+
+http.enabled: true
+http.port: {{ monitoring_port }}
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    username: beats_system
+    password: "{{ password }}"
+
+logging.files:
+  permissions: 0644

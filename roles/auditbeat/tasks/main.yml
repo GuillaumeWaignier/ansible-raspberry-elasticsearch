@@ -134,7 +134,7 @@
     mode: 0744
   notify: restart_auditbeat
 
-- name: Service systemD for auditbeat on {{ ansible_default_ipv4.address }}
+- name: Service systemD for auditbeat
   template:
     src: templates/auditbeat.service.j2
     dest: /etc/systemd/system/auditbeat.service

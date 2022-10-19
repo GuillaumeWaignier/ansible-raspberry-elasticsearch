@@ -1,0 +1,127 @@
+---
+
+- name: Add {{ group }} group
+  group:
+    name: "{{ group }}"
+    state: present
+- name: Create {{ user }} user
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    createhome: no
+    shell: /bin/bash
+    state: present
+- name: Create {{ base_directory }} directory
+  file:
+    path: "{{ base_directory }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+
+- name: Create sub-directory
+  file:
+    path: "{{ base_directory }}/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - heartbeat
+    - heartbeat/config
+    - heartbeat/config/monitors.d
+    - heartbeat/data
+  notify: restart_heartbeat
+
+- name: Create log directory
+  file:
+    path: "/var/log/heartbeat"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_heartbeat
+
+- name: Download heartbeat for x86_64 in version {{ version }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/heartbeat/heartbeat-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "x86_64"
+
+- name: Download heartbeat for aarch64 with version {{ version }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-{{ version }}-linux-arm64.tar.gz"
+    dest: "{{ base_directory }}/heartbeat/heartbeat-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "aarch64"
+
+- name: Extract heartbeat
+  unarchive:
+    src: "{{ base_directory }}/heartbeat/heartbeat-{{ version }}.tar.gz"
+    dest: "{{ base_directory }}/heartbeat"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+  notify: restart_heartbeat
+
+- name: Retrieve directory name after extraction of the archive
+  shell:
+    cmd: "ls -d {{ base_directory }}/heartbeat/heartbeat-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
+- name: Symlink for heartbeat
+  file:
+    src: "{{ directory_name.stdout }}"
+    path: "{{ base_directory }}/heartbeat/heartbeat"
+    state: link
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_heartbeat
+
+- name: Configure general conf for heartbeat
+  template:
+    src: templates/{{ item }}.j2
+    dest: "{{ base_directory }}/heartbeat/config/{{ item }}"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: 0644
+  with_items:
+    - heartbeat.yml
+    - monitors.d/hosts.yml
+    - monitors.d/nginx.yml
+  notify: restart_heartbeat
+
+
+- name: Add Healthcheck script for heartbeat
+  template:
+    src: "heartbeat-healthcheck.sh.j2"
+    dest: "{{ base_directory }}/heartbeat/heartbeat-healthcheck.sh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0744
+  notify: restart_heartbeat
+
+- name: Service systemD for heartbeat
+  template:
+    src: templates/heartbeat.service.j2
+    dest: /etc/systemd/system/heartbeat.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_heartbeat
+- name: Enable service heartbeat
+  systemd:
+    enabled: yes
+    daemon_reload: yes
+    name: heartbeat.service
+...
