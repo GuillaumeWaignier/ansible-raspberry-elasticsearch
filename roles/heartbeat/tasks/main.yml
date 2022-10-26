@@ -111,6 +111,13 @@
     mode: 0744
   notify: restart_heartbeat
 
+- name: Set cap_net_raw+eip on heartbeat"
+  community.general.capabilities:
+    path: "{{ base_directory }}/heartbeat/heartbeat/heartbeat"
+    capability: cap_net_raw+eip
+    state: present
+  notify: restart_heartbeat
+
 - name: Service systemD for heartbeat
   template:
     src: templates/heartbeat.service.j2
