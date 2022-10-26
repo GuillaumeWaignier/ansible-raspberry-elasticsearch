@@ -12,6 +12,8 @@ LimitNOFILE=65536
 LimitNPROC=4096
 LimitMEMLOCK=infinity
 Restart=on-failure
+RestartSec=1s
+StartLimitBurst=12
 
 [Install]
 WantedBy=multi-user.target

@@ -8,6 +8,8 @@ Type=simple
 User={{ user }}
 Group={{ group }}
 Restart=on-failure
+RestartSec=10s
+StartLimitBurst=12
 
 [Install]
 WantedBy=multi-user.target
