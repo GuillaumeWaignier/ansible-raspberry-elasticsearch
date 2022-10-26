@@ -98,7 +98,7 @@
   with_items:
     - heartbeat.yml
     - monitors.d/hosts.yml
-    - monitors.d/nginx.yml
+    - monitors.d/kibana.yml
   notify: restart_heartbeat
 
 
