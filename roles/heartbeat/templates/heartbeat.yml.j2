@@ -31,11 +31,11 @@ output.elasticsearch:
 processors:
   - add_observer_metadata:
       # Optional, but recommended geo settings for the location Heartbeat is running in
-      #geo:
+      geo:
         # Token describing this location
-        #name: us-east-1a
-        # Lat, Lon "
-        #location: "37.926868, -78.024902"
+        name: home
+        # Lat, Lon
+        location: "{{ latitude }}, {{ longitude }}"
 
 http.enabled: true
 http.port: {{ monitoring_port }}

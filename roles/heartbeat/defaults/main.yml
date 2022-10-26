@@ -10,4 +10,8 @@ monitoring_port: 5070
 
 password: test
 
+latitude: 50.633333
+longitude: 3.066667
+
+
 ...
