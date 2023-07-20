@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+
+path.home: {{ base_directory }}/apm-server/apm-server
+path.config: {{ base_directory }}/apm-server/config
+path.data: {{ base_directory }}/apm-server/data
+path.logs: /var/log/apm-server
+
+######################### APM Server Configuration #########################
+
+################################ APM Server ################################
+
+apm-server:
+  # Defines the host and port the server is listening on. Use "unix:/path/to.sock" to listen on a unix domain socket.
+  host: "{{ ansible_default_ipv4.address }}:8200"
+
+  rum:
+    enabled: true
+
+apm-server.ssl:
+  enabled: true
+  certificate: {{ base_directory }}/apm-server/config/kibana-{{ ansible_default_ipv4.address }}.crt
+  key: {{ base_directory }}/apm-server/config/kibana-{{ ansible_default_ipv4.address }}.key
+
+output.elasticsearch:
+  enabled: true
+  hosts:
+  {% for host in groups['elasticsearch'] %}
+    - "https://{{ host }}:9200"
+  {% endfor %}
+
+  username: "elastic"
+  password: "{{ password }}"
+
+logging.level: warning
+logging.to_files: true
+logging.files:
+  path: /var/log/apm-server
+  name: apm-server
+  keepfiles: 7
+
+http.enabled: true
+http.port: {{ monitoring_port }}
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    username: elastic
+    password: "{{ password }}"

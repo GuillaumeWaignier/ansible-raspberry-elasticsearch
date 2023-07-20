@@ -1,0 +1,14 @@
+[Unit]
+Description=APM server for the ELK stack
+
+[Service]
+ExecStart={{ base_directory }}/apm-server/apm-server/apm-server -c {{ base_directory }}/apm-server/config/apm-server.yml
+Type=simple
+User={{user}}
+Group={{group}}
+Restart=on-failure
+RestartSec=10s
+StartLimitBurst=12
+
+[Install]
+WantedBy=multi-user.target

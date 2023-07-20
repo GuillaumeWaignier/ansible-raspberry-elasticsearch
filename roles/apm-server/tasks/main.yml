@@ -1,0 +1,125 @@
+---
+
+- name: Add {{ group }} group
+  group:
+    name: "{{ group }}"
+    state: present
+- name: Create {{ user }} user
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    createhome: no
+    shell: /bin/bash
+    state: present
+- name: Create {{ base_directory }} directory
+  file:
+    path: "{{ base_directory }}"
+    state: directory
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+
+- name: Create sub-directory
+  file:
+    path: "{{ base_directory }}/{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - apm-server
+    - apm-server/config
+    - apm-server/data
+  notify: restart_apm
+
+- name: Create log directory
+  file:
+    path: "/var/log/apm-server"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_apm
+
+- name: Download apm-server for x86_64 in version {{ version }}
+  get_url:
+    url: "https://artifacts.elastic.co/downloads/apm-server/apm-server-{{ version }}-linux-x86_64.tar.gz"
+    dest: "{{ base_directory }}/apm-server/apm-server-{{ version }}.tar.gz"
+    force: yes
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: ansible_architecture == "x86_64"
+
+- name: Extract apm-server
+  unarchive:
+    src: "{{ base_directory }}/apm-server/apm-server-{{ version }}.tar.gz"
+    dest: "{{ base_directory }}/apm-server"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+  notify: restart_apm
+
+- name: Retrieve directory name after extraction of the archive
+  shell:
+    cmd: "ls -d {{ base_directory }}/apm-server/apm-server-{{ version }}*/ | sed 's/.$//'"
+  register: directory_name
+  changed_when: false
+
+- name: Symlink for apm-server
+  file:
+    src: "{{ directory_name.stdout }}"
+    path: "{{ base_directory }}/apm-server/apm-server"
+    state: link
+    force: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  notify: restart_apm
+
+- name: Configure general conf for apm-server
+  template:
+    src: templates/{{ item }}.j2
+    dest: "{{ base_directory }}/apm-server/config/{{ item }}"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: 0644
+  with_items:
+    - apm-server.yml
+  notify: restart_apm
+
+- name: Copy certificates
+  copy:
+    src: "/tmp/es/{{ item }}"
+    dest: "{{ base_directory }}/apm-server/config/{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  with_items:
+    - ca.crt
+    - kibana-{{ ansible_default_ipv4.address }}.key
+    - kibana-{{ ansible_default_ipv4.address }}.crt
+  notify: restart_apm
+
+- name: Add Healthcheck script for apm-server
+  template:
+    src: "apm-server-healthcheck.sh.j2"
+    dest: "{{ base_directory }}/apm-server/apm-server-healthcheck.sh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0744
+  notify: restart_apm
+
+- name: Service systemD for apm-server
+  template:
+    src: templates/apm-server.service.j2
+    dest: /etc/systemd/system/apm-server.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_apm
+- name: Enable service apm-server
+  systemd:
+    enabled: yes
+    daemon_reload: yes
+    name: apm-server.service
+...

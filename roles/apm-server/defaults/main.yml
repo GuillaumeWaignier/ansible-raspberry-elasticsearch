@@ -1,0 +1,14 @@
+---
+
+# user/ group to run apm-server
+user: apm
+group: apm
+
+base_directory: /elk
+version: 7.10.2
+
+# elastic passsword
+password: test
+
+monitoring_port: 5071
+...

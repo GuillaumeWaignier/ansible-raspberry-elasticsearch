@@ -1,0 +1,20 @@
+---
+
+- name: restart apm-server
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: apm-server.service
+  listen: restart_apm
+
+    
+- name: Wait for apm-server to be OK
+  command: "{{ base_directory }}/apm-server/apm-server-healthcheck.sh"
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 20
+  listen: restart_apm
+
+  
+...
