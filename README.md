@@ -129,7 +129,7 @@ export ES_PATH_CONF=/elk/elasticsearch/config/
     vars:
       - network_host: "0.0.0.0"
       - heap: 8g
-      - version: 7.17.6
+      - version: 8.8.2
 
 - name: Install kibana
   hosts: kibana
@@ -139,7 +139,7 @@ export ES_PATH_CONF=/elk/elasticsearch/config/
     vars:
       - expose_on_localhost: "no"
       - server_basepath: ""
-      - version: 7.17.6
+      - version: 8.8.2
 
 - name: Install metricbeat
   hosts: all
@@ -147,7 +147,7 @@ export ES_PATH_CONF=/elk/elasticsearch/config/
     - role: metricbeat
       tags: metricbeat
       vars:
-        - version: 7.17.6
+        - version: 8.8.2
 
 - name: Install filebeat
   hosts: all
@@ -155,5 +155,5 @@ export ES_PATH_CONF=/elk/elasticsearch/config/
     - role: filebeat
       tags: filebeat
       vars:
-        - version: 7.17.6
+        - version: 8.8.2
 ```
